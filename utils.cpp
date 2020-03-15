@@ -44,3 +44,13 @@ std::size_t getHash(const std::string& str){
     std::hash<std::string> hash_fn;
     return hash_fn(str);
 }
+
+
+
+void CollapseDups::operator()(std::string str){
+    ++rlist[std::move(str)];
+}
+
+yamr::ReduceList CollapseDups::get(){
+    return std::move(rlist);
+}

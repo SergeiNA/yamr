@@ -16,12 +16,33 @@ int main(int argc, char* argv[]) {
     //          << std::endl;
     //     return 1;
     // }
-    yamr::Mapper mapper("tMapper.txt",4);
-    auto mappedData = mapper.Run();
-    auto filesSMapped =mapper.Run("otMapper");
-    yamr::HashSorter hsorter(3);
-    hsorter.setInput(mappedData);
-    auto filesShuffeled =  hsorter.shuffle("otShuffel");
+    try{
+        yamr::Mapper mapper("tMapper.txt",4);
+        auto mappedData = mapper.Run();
+        auto filesSMapped =mapper.Run("otMapper");
+        yamr::HashSorter hsorter(3);
+        hsorter.setInput(mappedData);
+        auto shuffledata = hsorter.shuffle();
+        auto filesShuffeled =  hsorter.shuffle("otShuffel");
+        yamr::Reducer reducer(3);
+        reducer.setInput(shuffledata);
+        auto reducedData = reducer.run(CollapseDups());
+        auto fileReduced1 = reducer.run(CollapseDups(), "otReducerd");
+
+        auto resultReduce = reducedData[0];
+        for(auto i =1ul; i<reducedData.size(); ++i){
+            resultReduce.merge(reducedData[i]);
+        }
+        MinPrefix min_pref;
+        for(auto &[str,_]:resultReduce)
+            min_pref(str);
+        std::cout<<"Min prefix: " << min_pref.get() <<std::endl;
+
+    }catch(std::exception& e){
+        std::cout<<e.what();
+    }
+
+    
     // test split
     // FileRanges frange1 = splitFile("tsplit.dat",2);
     // for(const auto& r: frange1){

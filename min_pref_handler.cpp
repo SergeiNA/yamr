@@ -10,7 +10,7 @@ void MinPrefix::operator()(std::string_view sv){
     }
     std::size_t tmin_pref =0;
     auto min_length = std::min(prevs.size(),sv.size());
-    for (int i = 0; i < min_length; ++i){
+    for (auto i = 0ul; i < min_length; ++i){
         if(prevs[i]!=sv[i])
             break;
         ++tmin_pref;
@@ -19,6 +19,6 @@ void MinPrefix::operator()(std::string_view sv){
     prevs = sv;
     }
 
-std::size_t MinPrefix::get_min_pref() const noexcept{
+std::size_t MinPrefix::get() const noexcept{
     return min_pref;
 }

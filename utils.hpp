@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common.hpp"
+
 #include <fstream>
 #include <vector>
 
@@ -19,5 +21,13 @@ FileRanges splitFile(const std::string& fname, std::size_t chunk_sz);
 FileRanges splitStream(std::istream& is, std::size_t chunk_num, std::size_t fsize);
 
 std::size_t getHash(const std::string& str);
+
+class CollapseDups{
+public:
+    void operator()(std::string);
+    yamr::ReduceList get();
+private:
+    yamr::ReduceList rlist;
+};
 
 

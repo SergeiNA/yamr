@@ -61,6 +61,7 @@ SLists HashSorter::shuffle_form_data(){
 }
 
 SLists HashSorter::shuffle_form_files(){
+
     return {};
 }
 

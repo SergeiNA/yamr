@@ -1,26 +1,31 @@
 #include "reducer.hpp"
 
 #include <exception>
+#include <fstream>
 
 namespace yamr{
 
-    Reducer::Reducer(std::string ofile, std::size_t rthreads):
-        m_outputfile(ofile),m_rthreads(rthreads){
-            rlists.reserve(rthreads);
+    Reducer::Reducer(std::size_t rthreads):
+        m_rthreads(rthreads){
     }
 
-
-    void Reducer::run(std::function<void(std::string_view)> analizer){
-
-    }
-    void Reducer::assign(SLists slists){
+    void Reducer::setInput(SLists slists){
         if(slists.size()!= m_rthreads)
-            throw std::invalid_argument("size does not match");
-    }
-    void Reducer::assign(ShuffFileList sflist){
-        if(sflist.size()!= m_rthreads)
-            throw std::invalid_argument("size does not match");
+            throw std::invalid_argument("SLists size does not match");
+        clear();
+        m_slists = std::move(slists);
     }
 
+    void Reducer::setInput(ShuffFileList sflists){
+        if(m_sflists.size()!= m_rthreads)
+            throw std::invalid_argument("ShuffFileList size does not match");
+        clear();
+        m_sflists = std::move(sflists);
+    }
+
+    void Reducer::clear(){
+        m_slists.clear();
+        m_sflists.clear();
+    }
     
 }

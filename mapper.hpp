@@ -13,7 +13,7 @@ public:
     MLists Run();
     MapFileList Run(const std::string& outfname);
 
-private:
+private: 
     std::string inputFile;
     std::size_t m_nthreads;
 };
