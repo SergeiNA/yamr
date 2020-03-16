@@ -5,8 +5,8 @@
 #include <map>
 #include <vector>
 #include <future>
-
-#include <iostream>
+#include <fstream>
+#include <exception>
 namespace yamr{
 
 class Reducer{
@@ -63,7 +63,30 @@ Rlists Reducer::reduce_form_data(A analizer){
 
     template<class A>
     Rlists Reducer::reduce_form_files(A analizer){
-        return {};
+        Rlists rlists(m_rthreads);
+        std::vector<std::future<void>> tasks;
+        tasks.reserve(m_rthreads);
+        for(auto i = 0ul; i < m_rthreads; ++i){
+            tasks.emplace_back(
+                std::async(
+                    std::launch::async,
+                    [](ReduceList& redlist, const std::string& ifile, A analizer){
+                        std::ifstream ifs(ifile);
+                        if(!ifs) throw std::invalid_argument("Reducer::reduce_form_files can not open the file");
+                        for(std::string str; std::getline(ifs,str);){
+                            analizer(std::move(str));
+                        }
+                        redlist = analizer.get();
+                    },
+                    std::ref(rlists[i]),
+                    std::ref(m_sflists[i]),
+                    analizer
+                )
+            );
+        }
+        for(auto& t:tasks)
+            t.get();
+        return rlists;
     }
 
     template<class A>

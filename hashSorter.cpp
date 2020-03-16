@@ -2,6 +2,7 @@
 
 #include <future>
 #include <exception>
+#include <fstream>
 
 namespace yamr{
 
@@ -61,8 +62,29 @@ SLists HashSorter::shuffle_form_data(){
 }
 
 SLists HashSorter::shuffle_form_files(){
-
-    return {};
+    SLists slists(m_shuffsize);
+    std::vector<std::future<void>> tasks;
+    auto mapper_threads = m_mappedLists.size();
+    tasks.reserve(mapper_threads);
+    for(auto i = 0ul; i< mapper_threads; ++i){
+            tasks.emplace_back(std::async(
+                std::launch::async,
+                [&slists]( const std::string& ifile, ThreadSafe_SLists& th_safe){
+                        std::ifstream ifs(ifile);
+                        if(!ifs) throw std::invalid_argument("HashSorter::shuffle_form_files can not open the file");
+                        for(std::string str; std::getline(ifs,str);){
+                            auto nchunck = getHash(str)%th_safe.m_nthreads;
+                            th_safe.write(slists,std::move(str), nchunck);
+                        }
+                    },
+                    std::cref(m_mappedFileLists[i]),
+                    std::ref(th_save_slists)
+                )
+            );
+        }
+    for(auto& t:tasks)
+       t.get();
+    return slists;
 }
 
 ShuffFileList HashSorter::shuffle(const std::string& outfname){

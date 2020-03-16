@@ -12,6 +12,8 @@ struct SplitRange{
 
 using FileRanges = std::vector<SplitRange>;
 
+bool checkPath(const std::string& file);
+
 std::size_t fileSize(const std::string& fname);
 
 std::size_t align_by_endl(std::istream& is, std::size_t rough_pos);

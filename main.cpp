@@ -5,73 +5,56 @@
 #include "utils.hpp"
 
 #include <iostream>
+#include <algorithm>
 #include <set>
 
 int main(int argc, char* argv[]) {
-    // if (argc < 4) {
-    //     std::cout << "Wrong args: yamr <fname> <M> <R>\n"
-    //          << "fname - path to input file\n"
-    //          << "M - threads in mapper\n"
-    //          << "R - threads in reducer"
-    //          << std::endl;
-    //     return 1;
-    // }
-    try{
-        yamr::Mapper mapper("tMapper.txt",4);
-        auto mappedData = mapper.Run();
-        auto filesSMapped =mapper.Run("otMapper");
-        yamr::HashSorter hsorter(3);
-        hsorter.setInput(mappedData);
-        auto shuffledata = hsorter.shuffle();
-        auto filesShuffeled =  hsorter.shuffle("otShuffel");
-        yamr::Reducer reducer(3);
-        reducer.setInput(shuffledata);
-        auto reducedData = reducer.run(CollapseDups());
-        auto fileReduced1 = reducer.run(CollapseDups(), "otReducerd");
-
-        auto resultReduce = reducedData[0];
-        for(auto i =1ul; i<reducedData.size(); ++i){
-            resultReduce.merge(reducedData[i]);
-        }
-        MinPrefix min_pref;
-        for(auto &[str,_]:resultReduce)
-            min_pref(str);
-        std::cout<<"Min prefix: " << min_pref.get() <<std::endl;
-
-    }catch(std::exception& e){
-        std::cout<<e.what();
+    if (argc < 4) {
+        std::cout << "Wrong args: yamr <fname> <M> <R>\n"
+             << "fname - path to input file\n"
+             << "M - threads in mapper\n"
+             << "R - threads in reducer"
+             << std::endl;
+        return 1;
     }
 
-    
-    // test split
-    // FileRanges frange1 = splitFile("tsplit.dat",2);
-    // for(const auto& r: frange1){
-    //     std::cout<< r.begin<<" : "<<r.end<<std::endl;
-    //     std::ifstream ifs("tsplit.dat");
-    //     ifs.seekg(r.begin);
-    //     std::string str; 
-    //     std::getline(ifs, str);
-    //     std::cout<<str<<std::endl;
-    // }
-    // FileRanges frange2 = splitFile("tsplit.dat",3);
-    // for(const auto& r: frange2){
-    //     std::cout<< r.begin<<" : "<<r.end<<std::endl;
-    //     std::ifstream ifs("tsplit.dat");
-    //     ifs.seekg(r.begin);
-    //     std::string str; 
-    //     std::getline(ifs, str);
-    //     std::cout<<str<<std::endl;
-    // }
-    // FileRanges frange3 = splitFile("tsplit.dat",4);
-    // for(const auto& r: frange3){
-    //     std::cout<< r.begin<<" : "<<r.end<<std::endl;
-    //     std::ifstream ifs("tsplit.dat");
-    //     ifs.seekg(r.begin);
-    //     std::string str; 
-    //     std::getline(ifs, str);
-    //     std::cout<<str<<std::endl;
-    // }
-    
+    if(!checkPath(argv[1]) ){
+        std::cerr << "File path are incorrect" << std::endl;
+        return 1;
+    }
+    std::string mThreads(argv[2]);
+    std::string rThreads(argv[3]);
+
+    if (!(std::all_of(mThreads.begin(), mThreads.end(), ::isdigit)
+        && std::all_of(rThreads.begin(), rThreads.end(), ::isdigit))) {
+
+        std::cerr << "M or R are incorrect" << std::endl;
+        return 1;
+    }
+    try{
+        std::size_t m_threads = std::stoul(mThreads);
+        std::size_t r_threads = std::stoul(rThreads);
+
+        // mapper
+        yamr::Mapper mapper(argv[1],m_threads);
+        auto mappedData = mapper.Run();
+
+        // shuffle
+        yamr::HashSorter hsorter(r_threads);
+        hsorter.setInput(mappedData);
+        auto shuffledata = hsorter.shuffle();
+
+        // reduser
+        yamr::Reducer reducer(r_threads);
+        reducer.setInput(shuffledata);
+        auto fileReduced = reducer.run(CollapseDups(), "outReducerd");
+        
+        // find min prefix
+        std::cout<<"Min prefix: " << getMinPrefix(fileReduced) <<std::endl;
+
+    }catch(std::exception& e){
+        std::cout<<e.what()<<std::endl;
+    }
 
     return 0;
 }

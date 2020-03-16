@@ -15,6 +15,12 @@ std::size_t align_by_endl(std::istream& is, std::size_t pos){
     return pos;
 }
 
+bool checkPath(const std::string& file){
+    namespace fs =  std::filesystem;
+    return fs::exists(file);
+}
+
+
 std::size_t fileSize(const std::string& fname){
     namespace fs =  std::filesystem;
     return fs::file_size(fs::path(fname));
@@ -44,8 +50,6 @@ std::size_t getHash(const std::string& str){
     std::hash<std::string> hash_fn;
     return hash_fn(str);
 }
-
-
 
 void CollapseDups::operator()(std::string str){
     ++rlist[std::move(str)];
