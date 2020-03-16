@@ -10,17 +10,11 @@ addons:
     - libboost-all-dev
     - libboost-test-dev
     - g++-8
-    - doxygen
-    - doxygen-doc
-    - doxygen-latex
-    - doxygen-gui
-    - graphviz
 env:
   - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
 before_install:
   - eval "${MATRIX_EVAL}"
 script:
-- doxygen Doxyfile
 - cmake .
 - cmake --build .
 - cmake --build . --target test
