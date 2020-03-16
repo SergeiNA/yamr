@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.9)
 
 if(DEFINED ENV{TRAVIS_BUILD_NUMBER})
-    project(yamrs VERSION 0.0.$ENV{TRAVIS_BUILD_NUMBER})
+    project(yamr VERSION 0.0.$ENV{TRAVIS_BUILD_NUMBER})
 else()
-    project(yamrs VERSION 7.7.7)
+    project(yamr VERSION 7.7.7)
 endif()
 
 set(CMAKE_CXX_STANDARD 17)
