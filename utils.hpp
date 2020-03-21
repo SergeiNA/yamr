@@ -4,6 +4,10 @@
 
 #include <fstream>
 #include <vector>
+#include <string_view>
+#include <string>
+#include <algorithm>
+
 
 struct SplitRange{
     std::size_t begin=0;
@@ -24,12 +28,19 @@ FileRanges splitStream(std::istream& is, std::size_t chunk_num, std::size_t fsiz
 
 std::size_t getHash(const std::string& str);
 
-class CollapseDups{
+
+std::vector<std::string> str2prefixes(std::string);
+
+class PrefixSplitter{
 public:
-    void operator()(std::string);
-    yamr::ReduceList get();
-private:
-    yamr::ReduceList rlist;
+    yamr::MappedWord operator()(std::string str);
 };
 
+class MinPrefix{
+public:
+    std::size_t operator()(std::string_view sv);
+private:
+    std::size_t min_pref=0;
+    std::string_view prevs;
+};
 

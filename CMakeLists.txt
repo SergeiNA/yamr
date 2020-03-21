@@ -13,18 +13,17 @@ find_package(Boost COMPONENTS unit_test_framework REQUIRED)
 
 set (SRC_FILES 
                 common.hpp
+                mapper.hpp
+                reducer.hpp
                 utils.hpp             utils.cpp
-                mapper.hpp            mapper.cpp
                 hashSorter.hpp        hashSorter.cpp
-                reducer.hpp           reducer.cpp
-                min_pref_handler.hpp  min_pref_handler.cpp
                 )
 
 
 set(EXE_FILES main.cpp)
 
 set(TEST_FILES 
-                test_MinPrefix.cpp
+                test_utils.cpp
                 test_mapper.cpp
                 test_shuffle.cpp
                 test_reducer.cpp)
@@ -32,7 +31,7 @@ set(TEST_FILES
 add_executable(yamr ${EXE_FILES} ${SRC_FILES})
 
 set(TESTS   
-            test_MinPrefix
+            test_utils
             test_mapper
             test_shuffle
             test_reducer)

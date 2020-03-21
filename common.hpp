@@ -7,7 +7,8 @@
 
 namespace yamr{
 
-    using MappedList        = std::multiset<std::string>;
+    using MappedWord        = std::vector<std::string>;
+    using MappedList        = std::vector<std::string>;
     using MLists            = std::vector<MappedList>;
 
     using SuffleList        = std::multiset<std::string>;

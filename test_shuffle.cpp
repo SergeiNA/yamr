@@ -1,6 +1,6 @@
+// NOT IMPLEMENTED YET
 #define BOOST_TEST_MODULE async_single_thread
 
-#include "min_pref_handler.hpp"
 #include <sstream>
 #include <boost/test/unit_test.hpp>
 

@@ -5,6 +5,8 @@
 #include <algorithm>
 #include <string>
 
+#include <iostream>
+
 std::size_t align_by_endl(std::istream& is, std::size_t pos){
     is.seekg(pos = (pos == 0) ? pos: pos - 1, std::ios_base::beg);
     char c;
@@ -51,10 +53,23 @@ std::size_t getHash(const std::string& str){
     return hash_fn(str);
 }
 
-void CollapseDups::operator()(std::string str){
-    ++rlist[std::move(str)];
+std::vector<std::string> str2prefixes(std::string str){
+    std::vector<std::string> wordPrefixes;
+    wordPrefixes.reserve(str.size());
+    for(auto i =0ul; i < str.size(); ++i)
+        wordPrefixes.emplace_back(str.substr(0,i+1));
+    return wordPrefixes;
 }
 
-yamr::ReduceList CollapseDups::get(){
-    return std::move(rlist);
+
+yamr::MappedWord PrefixSplitter::operator()(std::string str){
+    return str2prefixes(std::move(str));
+}
+
+
+std::size_t MinPrefix::operator()(std::string_view sv){
+    if (sv == prevs)
+        min_pref = std::max(min_pref,sv.size());
+    prevs = sv;
+    return min_pref;
 }

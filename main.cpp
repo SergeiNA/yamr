@@ -1,7 +1,6 @@
 #include "mapper.hpp"
 #include "hashSorter.hpp"
 #include "reducer.hpp"
-#include "min_pref_handler.hpp"
 #include "utils.hpp"
 
 #include <iostream>
@@ -34,24 +33,21 @@ int main(int argc, char* argv[]) {
     try{
         std::size_t m_threads = std::stoul(mThreads);
         std::size_t r_threads = std::stoul(rThreads);
-
+        
         // mapper
-        yamr::Mapper mapper(argv[1],m_threads);
+        yamr::Mapper<PrefixSplitter> mapper(argv[1],m_threads);
         auto mappedData = mapper.Run();
 
         // shuffle
         yamr::HashSorter hsorter(r_threads);
-        hsorter.setInput(mappedData);
+        hsorter.setInput(std::move(mappedData));
         auto shuffledata = hsorter.shuffle();
 
         // reduser
-        yamr::Reducer reducer(r_threads);
-        reducer.setInput(shuffledata);
-        auto fileReduced = reducer.run(CollapseDups(), "outReducerd");
+        yamr::Reducer<MinPrefix> reducer(r_threads);
+        reducer.setInput(std::move(shuffledata));
+        auto fileReduced = reducer.run("outReduced");
         
-        // find min prefix
-        std::cout<<"Min prefix: " << getMinPrefix(fileReduced) <<std::endl;
-
     }catch(std::exception& e){
         std::cout<<e.what()<<std::endl;
     }
