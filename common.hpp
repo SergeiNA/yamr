@@ -14,7 +14,7 @@ namespace yamr{
     using SuffleList        = std::multiset<std::string>;
     using SLists            = std::vector<SuffleList>;
 
-    using ReduceList        = std::map<std::string, std::size_t>;
+    using ReduceList        = std::vector<std::string>;
     using Rlists            = std::vector<ReduceList>;
 
     using MapFileList       = std::vector<std::string>;

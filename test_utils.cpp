@@ -15,12 +15,19 @@ BOOST_AUTO_TEST_CASE(test_class_MinPrefix)
                                  "aabc",
                                  "aabcd"
                                  };
-    MinPrefix min_pref;
-    std::size_t mpref =0;
-    for(auto& s: input)
-        mpref = min_pref(s);
 
-    BOOST_CHECK_EQUAL(mpref, 3);
+    yamr::ReduceList out {"1","2","3"};
+    MinPrefix min_pref;
+    yamr::ReduceList rList;
+    for(auto& s: input){
+        auto tredl = min_pref(s);
+        if(!tredl.empty())
+            rList.emplace_back(tredl.at(0));
+    }
+
+    BOOST_CHECK_EQUAL(rList.size(), 3);
+    BOOST_CHECK_EQUAL_COLLECTIONS(rList.begin(),rList.end(),out.begin(),out.end());
+
 }
 
 BOOST_AUTO_TEST_CASE(WordPrefixSplitter)

@@ -38,7 +38,7 @@ public:
 
 class MinPrefix{
 public:
-    std::size_t operator()(std::string_view sv);
+    yamr::ReduceList operator()(std::string_view sv);
 private:
     std::size_t min_pref=0;
     std::string_view prevs;

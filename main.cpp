@@ -43,7 +43,7 @@ int main(int argc, char* argv[]) {
         hsorter.setInput(std::move(mappedData));
         auto shuffledata = hsorter.shuffle();
 
-        // reduser
+        // reducer
         yamr::Reducer<MinPrefix> reducer(r_threads);
         reducer.setInput(std::move(shuffledata));
         auto fileReduced = reducer.run("outReduced");

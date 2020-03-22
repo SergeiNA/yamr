@@ -67,9 +67,14 @@ yamr::MappedWord PrefixSplitter::operator()(std::string str){
 }
 
 
-std::size_t MinPrefix::operator()(std::string_view sv){
-    if (sv == prevs)
-        min_pref = std::max(min_pref,sv.size());
+yamr::ReduceList MinPrefix::operator()(std::string_view sv){
+    yamr::ReduceList reList;
+    if(prevs.empty())
+        reList.push_back(std::to_string(0));
+    if (sv == prevs && sv.size() > min_pref){
+        min_pref = sv.size();
+        reList.push_back(std::to_string(min_pref + 1));
+    }
     prevs = sv;
-    return min_pref;
+    return reList;
 }
